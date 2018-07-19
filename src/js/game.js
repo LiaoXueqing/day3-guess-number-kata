@@ -1,39 +1,50 @@
 "use stirct";
+const readline = require('readline');
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-function game(){
+let randomArray=[];
+let guessCount = 0;
+let result = "";
+rl.on('close', function() {
+    process.exit(0);
+});
+function startGame(){
     console.log("Guess Number Game, You have 6 chances to guess!");
-    let count = 6;
-    let randomArray = generator();
-    while(count!=0){
-        let guessNumber = "1 2 3 4";
-        let guessArray = guessNumber.split(" ");
-        //输入检测通过
+    randomArray = generator();
+    getInput();
+}
+function getInput(){
+    rl.on('line',function(inputs){
+        guessCount++;
+        let guessArray = stringToInt(inputs.split(" "));
         if(checkGuessNumber(guessArray)){
-            let result = guess(guessArray,randomArray);
-            if(result=="4A0B"){
-                console.log("Success!");
+            result = guess(guessArray,randomArray);
+            console.log(result);
+            if(result=="4A0B"||guessCount==6){
+                rl.close();
                 return ;
             }
+        }else{
+            getInput();
         }
-        count--;
-    }
-    console.log("Failure!");
-    return ;
+    });
 }
-
+function stringToInt(array){
+    return array.map(item=>parseInt(item));
+}
 function guess(guessArray,randomArray){
     let countA = 0;
     let countB = 0;
     for(let i=0;i<4;i++){
-        for(let j=0;j<4;j++){
-            if(i==j&&randomArray[i]==guessArray[i]){
-                countA++;
-            }else if(randomArray[i]==guessArray[j]){
-                countB++;
-            }
-        }
+        if(randomArray[i]==guessArray[i]){
+            countA++;
+        }else{
+            countB++;
+        }     
     }
-    console.log(countA+"A"+countB+"B");
     return `${countA}A${countB}B`;
 }
 
@@ -57,4 +68,4 @@ function generator(){
     }
     return randomArray;
 }
-game();
+startGame();
